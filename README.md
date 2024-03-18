@@ -112,3 +112,5 @@ content-type: application/json
 # Delete entry
 DELETE http://localhost:3000/api/entries/:id
 ```
+#database owerview
+Tällä hetkellä käytän ainoastaan users tietokantaa.
