@@ -46,6 +46,22 @@ CREATE TABLE Exercises (
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
+CREATE TABLE TreeniOhjelma (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    uid INT,
+    NAME VARCHAR(50),
+    MOVES VARCHAR(200),  -- Added comma here
+    REPS INT NOT NULL,
+    Weight VARCHAR(10) NOT NULL,
+    FOREIGN KEY (uid) REFERENCES Users(user_id)
+);
+
+
+
+INSERT INTO TreeniOhjelma (weight, name, reps)
+VALUES ('100kg', 'Bench Press', 10),
+       ('50kg', 'Squats', 12),
+       ('20kg', 'Bicep Curls', 8);
 -- Insert sample data
 
 INSERT INTO Users (username, password, email, created_at, user_level) VALUES

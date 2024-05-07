@@ -11,6 +11,7 @@ import authRouter from './routes/auth-router.mjs';
 const hostname = '127.0.0.1';
 const port = 3000;
 const app = express();
+import { authenticateToken } from './middlewares/authentication.mjs';
 
 // middleware, joka lisää CORS-otsakkeen jokaiseen lähtevään vastaukseen.
 // Eli kerrotaan selaimelle, että tämä palvelin sallii AJAX-pyynnöt
@@ -39,7 +40,7 @@ app.use('/sivusto', express.static(path.join(__dirname, '../public')));
 app.use('/items', itemRouter);
 
 // bind base url (/api/entries resource) for all entry routes to entryRouter
-app.use('/api/entries', entryRouter);
+app.use('/api/entries', authenticateToken, entryRouter)
 
 // Users resource (/api/users)
 app.use('/api/users', userRouter);
@@ -51,3 +52,4 @@ app.use('/api/auth', authRouter);
 app.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });
+

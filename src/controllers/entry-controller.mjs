@@ -8,36 +8,45 @@ import {
 } from '../models/entry-model.mjs';
 
 const getEntries = async (req, res) => {
-  // return only logged in user's own entries
-  // - get user's id from token (req.user.user_id)
-  const result = await listAllEntriesByUserId(req.user.user_id);
-  if (!result.error) {
+  try {
+    const result = await listAllEntriesByUserId(req.user.user_id);
     res.json(result);
-  } else {
-    res.status(500);
-    res.json(result);
+  } catch (error) {
+    console.error('Error fetching entries:', error);
+    res.status(500).json({ error: 'Error fetching entries' });
   }
 };
 
 const getEntryById = async (req, res) => {
-  const entry = await findEntryById(req.params.id);
-  if (entry) {
-    res.json(entry);
-  } else {
-    res.sendStatus(404);
+  try {
+    const entry = await findEntryById(req.params.id);
+    if (entry) {
+      res.json(entry);
+    } else {
+      res.sendStatus(404);
+    }
+  } catch (error) {
+    console.error('Error fetching entry by ID:', error);
+    res.status(500).json({ error: 'Error fetching entry by ID' });
   }
 };
 
 const postEntry = async (req, res) => {
-  const {user_id, entry_date, mood, weight, sleep_hours, notes} = req.body;
-  if (entry_date && (weight || mood || sleep_hours || notes) && user_id) {
-    const result = await addEntry(req.body);
-    if (result.entry_id) {
-      res.status(201);
-      res.json({message: 'New entry added.', ...result});
-    } else {
-      res.status(500);
-      res.json(result);
+  const { name, reps, weight } = req.body;
+  const uid = req.user.user_id
+  console.log('uid', uid)
+  if (uid && name && (weight || reps)) {
+  	const newEntry = { uid, name, reps, weight }
+    try {
+      const result = await addEntry(newEntry);
+      if (result.id) {
+        res.status(201).json({ message: 'New entry added.', ...result });
+      } else {
+        res.status(500).json(result);
+      }
+    } catch (error) {
+      console.error('Error adding entry:', error);
+      res.status(500).json({ error: 'Error adding entry' });
     }
   } else {
     res.sendStatus(400);
@@ -45,26 +54,46 @@ const postEntry = async (req, res) => {
 };
 
 const putEntry = async (req, res) => {
-  const entry_id = req.params.id;
-  const {entry_date, mood, weight, sleep_hours, notes} = req.body;
-  // check that all needed fields are included in request
-  if ((entry_date || weight || mood || sleep_hours || notes) && entry_id) {
-    const result = await updateEntryById({entry_id, ...req.body});
-    if (result.error) {
-      return res.status(result.error).json(result);
+  const { name, reps, weight } = req.body;
+  if (name || weight || reps) {
+    try {
+      const result = await updateEntryById(req.body);
+      if (result.error) {
+        res.status(result.error).json(result);
+      } else {
+        res.status(201).json(result);
+      }
+    } catch (error) {
+      console.error('Error updating entry:', error);
+      res.status(500).json({ error: 'Error updating entry' });
     }
-    return res.status(201).json(result);
   } else {
-    return res.status(400).json({error: 400, message: 'bad request'});
+    res.status(400).json({ error: 400, message: 'Bad request' });
   }
 };
 
 const deleteEntry = async (req, res) => {
-  const result = await deleteEntryById(req.params.id);
-  if (result.error) {
-    return res.status(result.error).json(result);
+  try {
+    const result = await deleteEntryById(req.params.id);
+    if (result.error) {
+      res.status(result.error).json(result);
+    } else {
+      res.json(result);
+    }
+  } catch (error) {
+    console.error('Error deleting entry:', error);
+    res.status(500).json({ error: 'Error deleting entry' });
   }
-  return res.json(result);
 };
 
-export {getEntries, getEntryById, postEntry, putEntry, deleteEntry};
+const getAllEntries = async () => {
+  try {
+    const entries = await listAllEntries();
+    return entries;
+  } catch (error) {
+    console.error('Error fetching entries:', error);
+    return { error: 'Error fetching entries' };
+  }
+};
+
+export { getEntries, getEntryById, postEntry, putEntry, deleteEntry, getAllEntries };
