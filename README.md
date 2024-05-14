@@ -88,29 +88,18 @@ POST http://localhost:3000/api/entries
 content-type: application/json
 
 {
-  "entry_date": "2024-02-12",
-  "mood": "Happy",
-  "weight": 69.6,
-  "sleep_hours": 7,
-  "notes": "This was a good day",
-  "user_id": 3
+  "reps" :3x3,
+  "move": "penkki",
+  "weight": 100kg,
 }
 
 # Update entry
 PUT http://localhost:3000/api/entries/:id
 content-type: application/json
 
-{
-  "entry_date": "2024-02-12",
-  "mood": "Even more happy now",
-  "weight": 69.6,
-  "sleep_hours": 7,
-  "notes": "This was a good day",
-  "user_id": 3
-}
 
 # Delete entry
 DELETE http://localhost:3000/api/entries/:id
 ```
 # database overview
-Tällä hetkellä käytän ainoastaan users tietokantaa.
+Tällä hetkellä käytän ainoastaan users tietokantaa ja Treeniohjelma.
